@@ -16,7 +16,6 @@ def read_file(lines):
 	while(not done):
 		dofile(l)
 
-
 def dofile(l):
 	grid = 0
 	for line in l:
@@ -75,14 +74,13 @@ def doline(line):
 		triangle_matrix = []
 	elif l[0] == "clear-pixels":
 		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
-	elif l[0] == "files":
-		filename = l[1]
+	# elif l[0] == "files":
+	# 	filename = l[1]
 	elif l[0] == "frames":
 		setFrames(int(l[1]), int(l[2]))
 	elif l[0] == 'vary':
 		vary(l[1], float(l[2]), float(l[3]), float(l[4]), float(l[5]))
 	elif l[0] == "end":
-		#write_file()
 		triangle_matrix = []
 		g = copy.deepcopy(grid)
 		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
