@@ -59,7 +59,7 @@ def doline(line):
 	elif l[0] == "pixels":
 		xpix = int(l[1])
 		ypix = int(l[2])
-		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
+		grid = []
 	elif l[0] == "render-parallel":
 		render_parallel()
 	elif l[0] == "render-perspective-cyclops":
@@ -73,7 +73,7 @@ def doline(line):
 	elif l[0] == "clear-triangles":
 		triangle_matrix = []
 	elif l[0] == "clear-pixels":
-		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
+		grid = []
 	# elif l[0] == "files":
 	# 	filename = l[1]
 	elif l[0] == "frames":
@@ -82,8 +82,8 @@ def doline(line):
 		vary(l[1], float(l[2]), float(l[3]), float(l[4]), float(l[5]))
 	elif l[0] == "end":
 		triangle_matrix = []
-		g = copy.deepcopy(grid)
-		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
+		g = grid
+		grid = []
 		trans_matrix = matrix.create_identity_matrix()
 		return g
 	elif l[0] == "save":
@@ -108,13 +108,17 @@ def draw_triangle(x1, y1, x2, y2, x3, y3):
 	draw_line(x2, y2, x3, y3)
 	draw_line(x1, y1, x3, y3)
 
-def draw_line(x1,y1,x2,y2):
-	if x1 == x2 and y1 == y2:
-		draw(x1,y1)
-	if abs(x1-x2) >= abs(y1-y2):
-		x_major_case(x1, y1, x2, y2)
-	else:
-		y_major_case(x1, y1, x2, y2)
+# def draw_line(x1,y1,x2,y2):
+# 	if x1 == x2 and y1 == y2:
+# 		draw(x1,y1)
+# 	if abs(x1-x2) >= abs(y1-y2):
+# 		x_major_case(x1, y1, x2, y2)
+# 	else:
+# 		y_major_case(x1, y1, x2, y2)
+
+def draw_line(x1, y1, x2, y2):
+	global grid
+	grid.append([x1,y1,x2,y2])
 
 def x_major_case(x1, y1, x2, y2):
 	if x1 > x2:
