@@ -1,7 +1,7 @@
 import sys
 import math
 import copy
-from math import sin, cos, radians
+from math import sin, cos
 import matrix
 import pickle
 #render parallel see if the z is positive
@@ -86,48 +86,11 @@ def doline(line):
 		grid = []
 		trans_matrix = matrix.create_identity_matrix()
 		return g
-	elif l[0] == 'import':
-		importfile(l[1], 
-               float(l[2]),float(l[3]),float(l[4]),
-               float(l[5]),float(l[6]),float(l[7]),
-               float(l[8]),float(l[9]),float(l[10]))
 	elif l[0] == "save":
 		save(l[1])
 	elif l[0] == "restore":
 		restore(l[1])
 	return 0
-
-
-def importfile(filename, sx, sy, sz, rx, ry, rz, mx, my, mz):
-    global triangle_matrix, trans_matrix
-    f1 = open(filename,'r')
-    l = f1.readlines()
-    i = 0
-    importtrig = []
-    while i < len(l):
-        
-        line = l[i]
-        parts = line.split()
-        if len(parts) == 1:
-            length = parts[0]
-	    i = i + 1
-	    break
-	i = i + 1
-    while i < len(l):
-        line = l[i]
-        parts = line.split()
-	importtrig = add_triangle([float(parts[0]), float(parts[1]), float(parts[2]), 1],
-                                  [float(parts[3]), float(parts[4]), float(parts[5]), 1],
-                                  [float(parts[6]), float(parts[7]), float(parts[8]), 1],
-                                  importtrig)
-        i = i + 1
-    importtrig = transform(scale(sx, sy, sz, matrix.create_identity_matrix()), importtrig)
-    importtrig = transform(rotate_x(rx, matrix.create_identity_matrix()), importtrig)
-    importtrig = transform(rotate_y(ry, matrix.create_identity_matrix()), importtrig)
-    importtrig = transform(rotate_z(rz, matrix.create_identity_matrix()), importtrig)
-    importtrig = transform(move(mx, my, mz, matrix.create_identity_matrix()), importtrig)
-    importtrig = transform(trans_matrix, importtrig)
-    triangle_matrix = triangle_matrix + importtrig
 
 def setFrames(start, end):
 	global frames, currentframe, done
@@ -144,14 +107,6 @@ def draw_triangle(x1, y1, x2, y2, x3, y3):
 	draw_line(x1, y1, x2, y2)
 	draw_line(x2, y2, x3, y3)
 	draw_line(x1, y1, x3, y3)
-
-# def draw_line(x1,y1,x2,y2):
-# 	if x1 == x2 and y1 == y2:
-# 		draw(x1,y1)
-# 	if abs(x1-x2) >= abs(y1-y2):
-# 		x_major_case(x1, y1, x2, y2)
-# 	else:
-# 		y_major_case(x1, y1, x2, y2)
 
 def draw_line(x1, y1, x2, y2):
 	global grid
@@ -457,12 +412,13 @@ def vary(var, start, end, sframe, eframe):
 				varys[v]['current'] += varys[v]['rate']
 
 def save(name):
-	global pushes, trans_matrix
-	pushes[name] = trans_matrix
+	with open(name, 'wb') as f:
+		pickle.dump(trans_matrix, f)
 
 def restore(name):
-	global pushes, trans_matrix
-	trans_matrix = pushes[name]
+	global trans_matrix
+	with open(name, 'rb') as f:
+		trans_matrix = pickle.load(f)
 
 ######
 
@@ -487,7 +443,6 @@ frames = 0
 currentframe = -1
 varys = {}
 done = False
-pushes = {}
 
 ######
 

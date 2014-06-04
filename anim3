@@ -18,6 +18,8 @@ move 0 -0.5 0
 scale .75 .75 .75
 rotate-x 30
 
+import octahedron.3dt 1 1 1 0 0 0 0 0 0
+
 # draw the palm
 #box-t 2.4 1.6 .75 0 0 0 0 0 0
 sphere-t 1.2 1 0.37 0 0 0 0 0 0
