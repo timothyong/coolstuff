@@ -80,6 +80,11 @@ def doline(line):
 		setFrames(int(l[1]), int(l[2]))
 	elif l[0] == 'vary':
 		vary(l[1], float(l[2]), float(l[3]), float(l[4]), float(l[5]))
+	elif l[0] == 'import':
+		importfile(l[1], 
+			   float(l[2]),float(l[3]),float(l[4]),
+			   float(l[5]),float(l[6]),float(l[7]),
+			   float(l[8]),float(l[9]),float(l[10]))
 	elif l[0] == "end":
 		triangle_matrix = []
 		g = copy.deepcopy(grid)
@@ -107,6 +112,38 @@ def draw_triangle(x1, y1, x2, y2, x3, y3):
 	draw_line(x1, y1, x2, y2)
 	draw_line(x2, y2, x3, y3)
 	draw_line(x1, y1, x3, y3)
+
+def importfile(filename, sx, sy, sz, rx, ry, rz, mx, my, mz):
+    global triangle_matrix, trans_matrix
+    f1 = open(filename,'r')
+    l = f1.readlines()
+    i = 0
+    importtrig = []
+    while i < len(l):
+        
+        line = l[i]
+        parts = line.split()
+        if len(parts) == 1:
+            length = parts[0]
+	    i = i + 1
+	    break
+	i = i + 1
+    while i < len(l):
+        line = l[i]
+        parts = line.split()
+	print parts
+	importtrig = add_triangle([parts[0], parts[1], parts[2], 1],
+                                  [parts[3], parts[4], parts[5], 1],
+                                  [parts[6], parts[7], parts[8], 1],
+                                  importtrig)
+        i = i + 1
+    importtrig = transform(scale(sx, sy, sz, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(rotate_x(rx, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(rotate_y(ry, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(rotate_z(rz, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(move(mx, my, mz, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(trans_matrix, importtrig)
+    triangle_matrix = triangle_matrix + importtrig
 
 def draw_line(x1,y1,x2,y2):
 	if x1 == x2 and y1 == y2:
