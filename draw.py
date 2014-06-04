@@ -420,13 +420,12 @@ def vary(var, start, end, sframe, eframe):
 				varys[v]['current'] += varys[v]['rate']
 
 def save(name):
-	with open(name, 'wb') as f:
-		pickle.dump(trans_matrix, f)
+	global pushes, trans_matrix
+	pushes[name] = trans_matrix
 
 def restore(name):
-	global trans_matrix
-	with open(name, 'rb') as f:
-		trans_matrix = pickle.load(f)
+	global pushes, trans_matrix
+	trans_matrix = pushes[name]
 
 ######
 
@@ -451,6 +450,7 @@ frames = 0
 currentframe = -1
 varys = {}
 done = False
+pushes = {}
 
 ######
 

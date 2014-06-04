@@ -1,11 +1,7 @@
-"""Direct pixel access examples."""
 import sys
 import draw
 from timer import Timer
 
-# Try to import SDL2. The import might fail, if the SDL2 DLL could not be
-# loaded. In that case, just print the error and exit with a proper
-# error code.
 try:
 	from sdl2 import *
 	import sdl2.ext as sdl2ext
@@ -22,35 +18,6 @@ def draw_pixels(renderer, xpix, ypix, grid):
 	for line in grid:
 		renderer.draw_line(line, white)
 	renderer.present()
-
-# def run(linefile):
-# 	sdl2ext.init()
-# 	for line in linefile:
-# 		l = line.split()
-# 		if len(l) == 0:
-# 			pass
-# 		elif l[0] == "pixels":
-# 			xpix = int(l[1])
-# 			ypix = int(l[2])
-# 	window = sdl2ext.Window("Pixel Access", size=(xpix, ypix))
-# 	window.show()
-# 	windowsurface = window.get_surface()
-# 	running = True
-# 	while running:
-# 		events = sdl2ext.get_events()
-# 		for event in events:
-# 			if event.type == SDL_QUIT:
-# 				running = False
-# 				break
-# 		with Timer() as t:
-# 			grid = draw.dofile(linefile)
-# 		print "=> elasped grid: %s s" % t.secs
-# 		with Timer() as t:
-# 			draw_pixels(windowsurface, xpix, ypix, grid)
-# 		print "=> elasped render: %s s" % t.secs
-# 		window.refresh()
-# 	sdl2ext.quit()
-# 	return 0
 
 def run(linefile):
 	sdl2ext.init()
