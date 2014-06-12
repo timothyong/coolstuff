@@ -49,11 +49,12 @@ def run():
 			
                         #############################
 			#####                   #####
-			##### KEY PRESS TO QUIT #####
+			##### PRESS ESC TO QUIT #####
 			#####                   #####
 			#############################
 			if event.type == SDL_KEYDOWN:
-				running = False
+				if event.key.keysym.sym == SDLK_ESCAPE:
+					running = False
 		with Timer() as t:
 			draw.setFrames(1,100)
 			draw.screen(-2, 2, -2, 2)
