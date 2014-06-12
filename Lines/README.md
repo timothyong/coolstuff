@@ -4,8 +4,12 @@
 1. Download:
    https://bitbucket.org/marcusva/py-sdl2/downloads/PySDL2-0.9.2.zip
 2. Unzip
-3.     'cd ~/Downloads/PySDL2-0.9.2'
-4.     'python setup.py install' or 'make install'
+3.
+     'cd ~/Downloads/PySDL2-0.9.2'
+4.
+     'python setup.py install' 
+or 
+     'make install'
 
 ###Pixel Access
 Draws the lines with the Bresenham Line Algorithm.
