@@ -1,6 +1,7 @@
 import sys
 import draw
 from timer import Timer
+from ctypes import *
 
 try:
 	from sdl2 import *
@@ -26,6 +27,7 @@ def run():
 	window.show()
 	renderer = sdl2ext.Renderer(window)
 	running = True
+	mat = []
 	while running:
 		events = sdl2ext.get_events()
 		for event in events:
@@ -33,8 +35,25 @@ def run():
 				running = False
 				break
 			if event.type == SDL_MOUSEBUTTONDOWN:
-				#DO WORK HERE
-				pass
+				
+				x = c_int(0)
+				y = c_int(0)
+				print(SDL_GetMouseState(x,y))
+				print(x,y)
+				x = x.value
+				y = y.value
+				x = float(x)
+				y = float(y)
+				print(x, y)
+				mat = mat + draw.box_t(0.25,0.25,0.25,0,0,0,float((x-250)/125),float((250-y)/125),0)
+			
+                        #############################
+			#####                   #####
+			##### KEY PRESS TO QUIT #####
+			#####                   #####
+			#############################
+			if event.type == SDL_KEYDOWN:
+				running = False
 		with Timer() as t:
 			draw.setFrames(1,100)
 			draw.screen(-2, 2, -2, 2)
@@ -49,6 +68,8 @@ def run():
 			print draw.frames
 			print draw.currentframe
 			print draw.varys
+			draw.triangle_matrix = draw.triangle_matrix + mat
+			draw.triangle_matrix = draw.transform(draw.trans_matrix, draw.triangle_matrix)
 			draw.render_parallel()
 			grid = draw.end()
 		print "=> elasped grid: %s s" % t.secs

@@ -254,8 +254,9 @@ def box_t(sx, sy, sz, rx, ry, rz, mx, my, mz):
 	box_triangles = transform(rotate_y(ry, matrix.create_identity_matrix()), box_triangles)
 	box_triangles = transform(rotate_z(rz, matrix.create_identity_matrix()), box_triangles)
 	box_triangles = transform(move(mx, my, mz, matrix.create_identity_matrix()), box_triangles)
-	box_triangles = transform(trans_matrix, box_triangles)
-	triangle_matrix = triangle_matrix + box_triangles
+	#box_triangles = transform(trans_matrix, box_triangles)
+	return box_triangles
+	#triangle_matrix = triangle_matrix + box_triangles
 
 def sphere_t(sx, sy, sz, rx, ry, rz, mx, my, mz):
 	global triangle_matrix
@@ -306,7 +307,7 @@ def sphere_t(sx, sy, sz, rx, ry, rz, mx, my, mz):
 	sphere_matrix = transform(rotate_y(ry, matrix.create_identity_matrix()), sphere_matrix)
 	sphere_matrix = transform(rotate_z(rz, matrix.create_identity_matrix()), sphere_matrix)
 	sphere_matrix = transform(move(mx, my, mz, matrix.create_identity_matrix()), sphere_matrix)
-	sphere_matrix = transform(trans_matrix, sphere_matrix)
+	#sphere_matrix = transform(trans_matrix, sphere_matrix)
 	triangle_matrix = triangle_matrix + sphere_matrix
 
 #*****MATRIXES*****
