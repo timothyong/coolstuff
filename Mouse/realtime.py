@@ -28,6 +28,7 @@ def run():
 	renderer = sdl2ext.Renderer(window)
 	running = True
 	mat = []
+	temp = []
 	while running:
 		events = sdl2ext.get_events()
 		for event in events:
@@ -45,7 +46,8 @@ def run():
 				x = float(x)
 				y = float(y)
 				print(x, y)
-				mat = mat + draw.box_t(0.25,0.25,0.25,0,0,0,float((x-250)/125),float((250-y)/125),0)
+				temp = draw.box_t(0.25,0.25,0.25,0,0,0,float((x-250)/125),float((250-y)/125),0)
+				
 			
                         #############################
 			#####                   #####
@@ -69,8 +71,12 @@ def run():
 			print draw.frames
 			print draw.currentframe
 			print draw.varys
+			#temp = draw.transform(draw.trans_matrix, temp)
 			draw.triangle_matrix = draw.triangle_matrix + mat
 			draw.triangle_matrix = draw.transform(draw.trans_matrix, draw.triangle_matrix)
+			draw.triangle_matrix = draw.triangle_matrix + temp
+			mat = mat + temp
+			temp = []
 			draw.render_parallel()
 			grid = draw.end()
 		print "=> elasped grid: %s s" % t.secs
