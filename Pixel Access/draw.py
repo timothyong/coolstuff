@@ -1,8 +1,20 @@
 import sys
 import math
-from math import sin, cos
+import copy
+from math import sin, cos, radians
 import matrix
 import pickle
+#render parallel see if the z is positive
+
+def main():
+	read_file(sys.argv[1])
+
+def read_file(lines):
+	global frames,currentframe
+	f = open(lines,'r')
+	l = f.readlines();
+	while(not done):
+		dofile(l)
 
 def dofile(l):
 	grid = 0
@@ -11,12 +23,75 @@ def dofile(l):
 	return grid
 
 def is_number(s):
-	try:
-		float(s)
-		return True
-	except ValueError:
-		return False
-		
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+def doline(line):
+	global filename
+	global triangle_matrix, trans_matrix
+	global xmax, xmin, ymax, ymin
+	global xpix, ypix, grid
+	l = line.split()
+	if len(l) == 0:
+		return
+	if l[0] == "#":
+		pass
+	if l[0] == "identity":
+		trans_matrix = matrix.create_identity_matrix()
+	elif l[0] == "move":
+		trans_matrix = move(is_var(l[1]), is_var(l[2]), is_var(l[3]), trans_matrix)
+	elif l[0] == "scale":
+		trans_matrix = scale(is_var(l[1]), is_var(l[2]), is_var(l[3]), trans_matrix)
+	elif l[0] == "rotate-x":
+		trans_matrix = rotate_x(is_var(l[1]), trans_matrix)
+	elif l[0] == "rotate-y":
+		trans_matrix = rotate_y(is_var(l[1]), trans_matrix)
+	elif l[0] == "rotate-z":
+		trans_matrix = rotate_z(is_var(l[1]), trans_matrix)
+	elif l[0] == "screen":
+		xmin = int(l[1])
+		ymin = int(l[2])
+		xmax = int(l[3])
+		ymax = int(l[4])
+	elif l[0] == "pixels":
+		xpix = int(l[1])
+		ypix = int(l[2])
+		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
+	elif l[0] == "render-parallel":
+		render_parallel()
+	elif l[0] == "render-perspective-cyclops":
+		render_perspective_cyclops(float(l[1]),float(l[2]),float(l[3]))
+	elif l[0] == "render-perspective-stereo":
+		render_perspective_stereo(float(l[1]), float(l[2]), float(l[3]), float(l[4]), float(l[5]), float(l[6]))
+	elif l[0] == "sphere-t":
+		sphere_t(is_var(l[1]),is_var(l[2]),is_var(l[3]),is_var(l[4]), is_var(l[5]), is_var(l[6]), is_var(l[7]), is_var(l[8]), is_var(l[9]))
+	elif l[0] == "box-t":
+		box_t(is_var(l[1]), is_var(l[2]), is_var(l[3]), is_var(l[4]), is_var(l[5]), is_var(l[6]), is_var(l[7]), is_var(l[8]), is_var(l[9]))
+	elif l[0] == "clear-triangles":
+		triangle_matrix = []
+	elif l[0] == "clear-pixels":
+		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
+	# elif l[0] == "files":
+	# 	filename = l[1]
+	elif l[0] == "frames":
+		setFrames(int(l[1]), int(l[2]))
+	elif l[0] == 'vary':
+		vary(l[1], float(l[2]), float(l[3]), float(l[4]), float(l[5]))
+	elif l[0] == "end":
+		triangle_matrix = []
+		g = copy.deepcopy(grid)
+		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
+		trans_matrix = matrix.create_identity_matrix()
+		return g
+	elif l[0] == "save":
+		save(l[1])
+	elif l[0] == "restore":
+		restore(l[1])
+	return 0
+
 def setFrames(start, end):
 	global frames, currentframe, done
 	if currentframe == -1:
@@ -33,9 +108,13 @@ def draw_triangle(x1, y1, x2, y2, x3, y3):
 	draw_line(x2, y2, x3, y3)
 	draw_line(x1, y1, x3, y3)
 
-def draw_line(x1, y1, x2, y2):
-	global grid
-	grid.append([x1,y1,x2,y2])
+def draw_line(x1,y1,x2,y2):
+	if x1 == x2 and y1 == y2:
+		draw(x1,y1)
+	if abs(x1-x2) >= abs(y1-y2):
+		x_major_case(x1, y1, x2, y2)
+	else:
+		y_major_case(x1, y1, x2, y2)
 
 def x_major_case(x1, y1, x2, y2):
 	if x1 > x2:
@@ -368,3 +447,8 @@ frames = 0
 currentframe = -1
 varys = {}
 done = False
+
+######
+
+if __name__ == '__main__':
+	main()
