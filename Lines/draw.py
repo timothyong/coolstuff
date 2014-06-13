@@ -59,7 +59,7 @@ def doline(line):
 	elif l[0] == "pixels":
 		xpix = int(l[1])
 		ypix = int(l[2])
-		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
+		grid = []
 	elif l[0] == "render-parallel":
 		render_parallel()
 	elif l[0] == "render-perspective-cyclops":
@@ -73,45 +73,30 @@ def doline(line):
 	elif l[0] == "clear-triangles":
 		triangle_matrix = []
 	elif l[0] == "clear-pixels":
-		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
+		grid = []
 	# elif l[0] == "files":
 	# 	filename = l[1]
 	elif l[0] == "frames":
 		setFrames(int(l[1]), int(l[2]))
 	elif l[0] == 'vary':
 		vary(l[1], float(l[2]), float(l[3]), float(l[4]), float(l[5]))
-	elif l[0] == 'import':
-		importfile(l[1], 
-			   float(l[2]),float(l[3]),float(l[4]),
-			   float(l[5]),float(l[6]),float(l[7]),
-			   float(l[8]),float(l[9]),float(l[10]))
 	elif l[0] == "end":
 		triangle_matrix = []
-		g = copy.deepcopy(grid)
-		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
+		g = grid
+		grid = []
 		trans_matrix = matrix.create_identity_matrix()
 		return g
+	elif l[0] == 'import':
+		importfile(l[1], 
+               float(l[2]),float(l[3]),float(l[4]),
+               float(l[5]),float(l[6]),float(l[7]),
+               float(l[8]),float(l[9]),float(l[10]))
 	elif l[0] == "save":
 		save(l[1])
 	elif l[0] == "restore":
 		restore(l[1])
 	return 0
 
-def setFrames(start, end):
-	global frames, currentframe, done
-	if currentframe == -1:
-		frames = end
-		currentframe = start
-	else:
-		currentframe += 1
-		if currentframe == frames:
-			currentframe = 0
-		vary
-
-def draw_triangle(x1, y1, x2, y2, x3, y3):
-	draw_line(x1, y1, x2, y2)
-	draw_line(x2, y2, x3, y3)
-	draw_line(x1, y1, x3, y3)
 
 def importfile(filename, sx, sy, sz, rx, ry, rz, mx, my, mz):
     global triangle_matrix, trans_matrix
@@ -131,10 +116,9 @@ def importfile(filename, sx, sy, sz, rx, ry, rz, mx, my, mz):
     while i < len(l):
         line = l[i]
         parts = line.split()
-	print parts
-	importtrig = add_triangle([parts[0], parts[1], parts[2], 1],
-                                  [parts[3], parts[4], parts[5], 1],
-                                  [parts[6], parts[7], parts[8], 1],
+	importtrig = add_triangle([float(parts[0]), float(parts[1]), float(parts[2]), 1],
+                                  [float(parts[3]), float(parts[4]), float(parts[5]), 1],
+                                  [float(parts[6]), float(parts[7]), float(parts[8]), 1],
                                   importtrig)
         i = i + 1
     importtrig = transform(scale(sx, sy, sz, matrix.create_identity_matrix()), importtrig)
@@ -145,13 +129,33 @@ def importfile(filename, sx, sy, sz, rx, ry, rz, mx, my, mz):
     importtrig = transform(trans_matrix, importtrig)
     triangle_matrix = triangle_matrix + importtrig
 
-def draw_line(x1,y1,x2,y2):
-	if x1 == x2 and y1 == y2:
-		draw(x1,y1)
-	if abs(x1-x2) >= abs(y1-y2):
-		x_major_case(x1, y1, x2, y2)
+def setFrames(start, end):
+	global frames, currentframe, done
+	if currentframe == -1:
+		frames = end
+		currentframe = start
 	else:
-		y_major_case(x1, y1, x2, y2)
+		currentframe += 1
+		if currentframe == frames:
+			currentframe = 0
+		vary
+
+def draw_triangle(x1, y1, x2, y2, x3, y3):
+	draw_line(x1, y1, x2, y2)
+	draw_line(x2, y2, x3, y3)
+	draw_line(x1, y1, x3, y3)
+
+# def draw_line(x1,y1,x2,y2):
+# 	if x1 == x2 and y1 == y2:
+# 		draw(x1,y1)
+# 	if abs(x1-x2) >= abs(y1-y2):
+# 		x_major_case(x1, y1, x2, y2)
+# 	else:
+# 		y_major_case(x1, y1, x2, y2)
+
+def draw_line(x1, y1, x2, y2):
+	global grid
+	grid.append([x1,y1,x2,y2])
 
 def x_major_case(x1, y1, x2, y2):
 	if x1 > x2:
@@ -453,13 +457,12 @@ def vary(var, start, end, sframe, eframe):
 				varys[v]['current'] += varys[v]['rate']
 
 def save(name):
-	with open(name, 'wb') as f:
-		pickle.dump(trans_matrix, f)
+	global pushes, trans_matrix
+	pushes[name] = trans_matrix
 
 def restore(name):
-	global trans_matrix
-	with open(name, 'rb') as f:
-		trans_matrix = pickle.load(f)
+	global pushes, trans_matrix
+	trans_matrix = pushes[name]
 
 ######
 
@@ -484,6 +487,7 @@ frames = 0
 currentframe = -1
 varys = {}
 done = False
+pushes = {}
 
 ######
 
