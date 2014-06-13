@@ -86,6 +86,11 @@ def doline(line):
 		grid = [[[0, 0, 0] for i in range(xpix)] for j in range(ypix)]
 		trans_matrix = matrix.create_identity_matrix()
 		return g
+	elif l[0] == 'import':
+		importfile(l[1], 
+			   float(l[2]),float(l[3]),float(l[4]),
+			   float(l[5]),float(l[6]),float(l[7]),
+			   float(l[8]),float(l[9]),float(l[10]))
 	elif l[0] == "save":
 		save(l[1])
 	elif l[0] == "restore":
@@ -169,6 +174,37 @@ def draw(x, y):
 		pixel[2] = b
 	except:
 		pass
+
+def importfile(filename, sx, sy, sz, rx, ry, rz, mx, my, mz):
+    global triangle_matrix, trans_matrix
+    f1 = open(filename,'r')
+    l = f1.readlines()
+    i = 0
+    importtrig = []
+    while i < len(l):
+        
+        line = l[i]
+        parts = line.split()
+        if len(parts) == 1:
+            length = parts[0]
+	    i = i + 1
+	    break
+	i = i + 1
+    while i < len(l):
+        line = l[i]
+        parts = line.split()
+	importtrig = add_triangle([float(parts[0]), float(parts[1]), float(parts[2]), 1],
+                                  [float(parts[3]), float(parts[4]), float(parts[5]), 1],
+                                  [float(parts[6]), float(parts[7]), float(parts[8]), 1],
+                                  importtrig)
+        i = i + 1
+    importtrig = transform(scale(sx, sy, sz, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(rotate_x(rx, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(rotate_y(ry, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(rotate_z(rz, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(move(mx, my, mz, matrix.create_identity_matrix()), importtrig)
+    importtrig = transform(trans_matrix, importtrig)
+    triangle_matrix = triangle_matrix + importtrig
 
 def move(dx, dy, dz, m):
 	new_matrix = matrix.create_identity_matrix()

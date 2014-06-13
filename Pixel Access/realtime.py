@@ -18,13 +18,14 @@ white = sdl2ext.Color(255, 255, 255)
 black = sdl2ext.Color(0, 0, 0)
 
 def draw_pixels(surface, xpix, ypix, grid):
-	pixelview = sdl2ext.pixels3d(surface)
+	pixelview = sdl2ext.PixelView(surface)
 	for y in range(ypix):
 		for x in range(xpix):
-			if grid[y][x][0] == 255:
-				pixelview[x][y] = white   
-			else:
-				pixelview[x][y] = black
+			pixelview[y][x] = sdl2ext.Color(grid[y][x][0],grid[y][x][1],grid[y][x][2])   
+			#if grid[y][x][0] == 255:
+			#	pixelview[x][y] = white   
+			#else:
+			#	pixelview[x][y] = black
 	del pixelview
 
 def run(linefile):
@@ -46,6 +47,18 @@ def run(linefile):
 			if event.type == SDL_QUIT:
 				running = False
 				break
+		grid = draw.dofile(linefile)
+		draw_pixels(windowsurface, xpix, ypix, grid)
+		window.refresh()
+	sdl2ext.quit()
+	return 0
+	'''		
+	while running:
+		events = sdl2ext.get_events()
+		for event in events:
+			if event.type == SDL_QUIT:
+				running = False
+				break
 		with Timer() as t:
 			grid = draw.dofile(linefile)
 		print "=> elasped grid: %s s" % t.secs
@@ -55,7 +68,7 @@ def run(linefile):
 		window.refresh()
 	sdl2ext.quit()
 	return 0
-
+'''
 def main(lines):
 	f = open(lines,'r')
 	l = f.readlines()
