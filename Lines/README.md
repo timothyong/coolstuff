@@ -1,4 +1,5 @@
-
+Using SDL with Python
+Sweyn Venderbush and Timothy Ong
 
 ###Installing PySDL2
 1. Download:
